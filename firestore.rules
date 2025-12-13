@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             (request.auth.token.admin == true || 
+              request.auth.token.email in ['admin@ecgkid.com', 'rajka@ecgkid.com', 'ecgkidportal@gmail.com']);
+    }
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    // News Collection
+    match /news/{newsId} {
+      // Anyone can read
+      allow read: if true;
+      
+      // Only admins can create, update, or delete
+      allow create, update, delete: if isAdmin();
+      
+      // Increment view count (special case)
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'updatedAt']);
+    }
+    
+    // Blog Collection
+    match /blog/{blogId} {
+      // Anyone can read
+      allow read: if true;
+      
+      // Only admins can create, update, or delete
+      allow create, update, delete: if isAdmin();
+      
+      // Allow updating likes and comment count
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['likes', 'commentCount', 'views', 'updatedAt']);
+    }
+    
+    // Blog Comments Sub-collection
+    match /blog/{blogId}/comments/{commentId} {
+      // Anyone can read
+      allow read: if true;
+      
+      // Authenticated users can create comments
+      allow create: if isAuthenticated() && 
+                      request.resource.data.authorId == request.auth.uid;
+      
+      // Users can update/delete their own comments, admins can delete any
+      allow update, delete: if isOwner(resource.data.authorId) || isAdmin();
+    }
+    
+    // Forum Topics Collection
+    match /forum/{topicId} {
+      // Anyone can read
+      allow read: if true;
+      
+      // Authenticated users can create topics
+      allow create: if isAuthenticated() && 
+                      request.resource.data.authorId == request.auth.uid;
+      
+      // Authors can update their own topics, admins can update any
+      allow update: if isOwner(resource.data.authorId) || isAdmin();
+      
+      // Only admins can delete topics
+      allow delete: if isAdmin();
+      
+      // Allow incrementing view count
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['views', 'updatedAt']);
+    }
+    
+    // Forum Replies Sub-collection
+    match /forum/{topicId}/replies/{replyId} {
+      // Anyone can read
+      allow read: if true;
+      
+      // Authenticated users can create replies
+      allow create: if isAuthenticated() && 
+                      request.resource.data.authorId == request.auth.uid;
+      
+      // Authors can update their own replies, admins can update/delete any
+      allow update, delete: if isOwner(resource.data.authorId) || isAdmin();
+      
+      // Allow liking replies
+      allow update: if request.resource.data.diff(resource.data).affectedKeys()
+                      .hasOnly(['likes']);
+    }
+    
+    // Admin Users Collection (stores admin privileges)
+    match /admins/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only manually set in Firebase Console
+    }
+    
+    // User Profiles Collection
+    match /users/{userId} {
+      // Anyone can read public profiles
+      allow read: if true;
+      
+      // Users can create/update their own profile
+      allow create, update: if isOwner(userId);
+      
+      // Only admins can delete profiles
+      allow delete: if isAdmin();
+    }
+  }
+}

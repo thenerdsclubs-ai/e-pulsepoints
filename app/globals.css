@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+:root {
+  /* Duolingo-inspired color palette */
+  --duo-green: #58cc02;
+  --duo-green-hover: #4fb800;
+  --duo-blue: #1cb0f6;
+  --duo-blue-hover: #0fa4e6;
+  --duo-purple: #ce82ff;
+  --duo-red: #ff4b4b;
+  --duo-orange: #ff9600;
+  --duo-yellow: #ffc800;
+  --duo-pink: #ff6ba7;
+  
+  /* Medical colors */
+  --medical-red: #dc2626;
+  --medical-red-hover: #b91c1c;
+  --medical-blue: #2563eb;
+  --medical-green: #16a34a;
+  
+  /* UI colors */
+  --text-primary: #3c3c41;
+  --text-secondary: #777777;
+  --border-light: #e5e5e5;
+  --bg-soft: #f7f7f7;
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  @apply antialiased;
+}
+
+/* Duolingo-style Design System */
+.btn-primary {
+  @apply bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 
+         text-white font-bold py-4 px-8 rounded-2xl transition-all duration-200 
+         transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl 
+         border-b-4 border-green-700 hover:border-green-800;
+}
+
+.btn-secondary {
+  @apply bg-gradient-to-b from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 
+         text-white font-bold py-4 px-8 rounded-2xl transition-all duration-200 
+         transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl 
+         border-b-4 border-blue-700 hover:border-blue-800;
+}
+
+.btn-outline {
+  @apply bg-white hover:bg-gray-50 text-blue-600 border-2 border-blue-500 font-bold 
+         py-4 px-8 rounded-2xl transition-all duration-200 hover:shadow-lg;
+}
+
+.btn-danger {
+  @apply bg-gradient-to-b from-red-400 to-red-600 hover:from-red-500 hover:to-red-700 
+         text-white font-bold py-4 px-8 rounded-2xl transition-all duration-200 
+         transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl 
+         border-b-4 border-red-700 hover:border-red-800;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 
+         border-2 border-gray-100 hover:border-gray-200 p-6;
+}
+
+.card-elevated {
+  @apply bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 
+         border-2 border-blue-100 hover:border-blue-200 p-6 transform hover:-translate-y-1;
+}
+
+.gamification-card {
+  @apply bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-lg hover:shadow-xl 
+         transition-all duration-300 border-2 border-purple-200 hover:border-purple-300 p-6 
+         transform hover:-translate-y-1;
+}
+
+.gradient-bg {
+  @apply bg-gradient-to-br from-blue-50 via-white to-purple-50;
+}
+
+.duo-gradient {
+  @apply bg-gradient-to-br from-green-100 via-blue-50 to-purple-100;
+}
+
+/* Enhanced gradient backgrounds */
+.hero-gradient {
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 25%, 
+    #f093fb 50%, 
+    #f5576c 75%, 
+    #4facfe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.aurora-gradient {
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 25%, 
+    #6ab7ff 50%, 
+    #3b82f6 75%, 
+    #1e40af 100%);
+  background-size: 300% 300%;
+  animation: gradientShift 12s ease infinite;
+}
+
+.sunset-gradient {
+  background: linear-gradient(135deg, 
+    #ff9a9e 0%, 
+    #fecfef 25%, 
+    #fecfef 50%, 
+    #f093fb 75%, 
+    #f5576c 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
+}
+
+.ocean-gradient {
+  background: linear-gradient(135deg, 
+    #a8edea 0%, 
+    #fed6e3 25%, 
+    #ffd89b 50%, 
+    #19d3ae 75%, 
+    #0891b2 100%);
+  background-size: 250% 250%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.cosmic-gradient {
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 20%, 
+    #89216b 40%, 
+    #da4453 60%, 
+    #ffd89b 80%, 
+    #19d3ae 100%);
+  background-size: 600% 600%;
+  animation: gradientShift 20s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Glassmorphism effects */
+.glass-card {
+  @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-xl;
+}
+
+.glass-card-dark {
+  @apply bg-black/20 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl;
+}
+
+/* Store item cards */
+.store-card {
+  @apply bg-gradient-to-br from-white via-gray-50 to-blue-50 rounded-2xl shadow-lg 
+         hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 
+         border-2 border-gray-100 hover:border-blue-200 p-6;
+}
+
+.store-card-premium {
+  @apply bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 rounded-2xl shadow-xl 
+         hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 
+         border-2 border-purple-200 hover:border-purple-300 p-6;
+}
+
+.section-padding {
+  @apply py-16 md:py-20 lg:py-24;
+}
+
+.container-width {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.medical-hero {
+  @apply bg-gradient-to-br from-green-50 via-white to-blue-50 relative overflow-hidden;
+}
+
+.hover-lift {
+  @apply transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent;
+}
+
+/* Mobile screenshot containers */
+.mobile-screenshot {
+  @apply aspect-[9/19.5] rounded-3xl overflow-hidden shadow-2xl;
+}
+
+.mobile-screenshot-sm {
+  @apply aspect-[9/19.5] rounded-2xl overflow-hidden shadow-xl;
+}
+
+/* Gamification elements */
+.gems-display {
+  @apply flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 
+         text-white px-4 py-2 rounded-full font-bold shadow-lg;
+}
+
+.xp-display {
+  @apply flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 
+         text-white px-4 py-2 rounded-full font-bold shadow-lg;
+}
+
+.hearts-display {
+  @apply flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-500 
+         text-white px-4 py-2 rounded-full font-bold shadow-lg;
+}
+
+.pulse-points-display {
+  @apply flex items-center space-x-2 bg-gradient-to-r from-green-500 to-teal-500 
+         text-white px-4 py-2 rounded-full font-bold shadow-lg;
+}
+
+/* Achievement badges */
+.achievement-badge {
+  @apply bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-full 
+         w-16 h-16 flex items-center justify-center text-2xl shadow-lg transform 
+         hover:scale-110 transition-transform duration-200;
+}
+
+/* Progress bars */
+.progress-bar {
+  @apply bg-gray-200 rounded-full h-4 overflow-hidden;
+}
+
+.progress-fill {
+  @apply bg-gradient-to-r from-green-400 to-blue-500 h-full transition-all duration-500 
+         rounded-full shadow-inner;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gradient-to-b from-blue-400 to-purple-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply from-blue-500 to-purple-600;
+}
