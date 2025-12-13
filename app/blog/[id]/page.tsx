@@ -8,6 +8,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
 import { generateArticleSchema } from '@/lib/schemas';
+import PDFDownloadButton, { PDFDownloadCard } from '@/app/components/blog/PDFDownloadButton';
 
 interface Article {
   id: string;
@@ -206,6 +207,21 @@ export default function BlogArticlePage() {
         {/* Article Content */}
         <article className="container mx-auto px-6 max-w-4xl py-12">
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+            
+            {/* PDF Download Card */}
+            <PDFDownloadCard post={{
+              id: article.id,
+              title: article.title,
+              content: article.content,
+              author: article.author.name,
+              publishedAt: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+              tags: article.tags,
+              category: article.category,
+              excerpt: article.excerpt,
+              imageUrl: article.imageUrl,
+              featured: article.featured
+            }} />
+
             <div 
               className="ecg-article-content
                 prose prose-lg max-w-none
@@ -240,14 +256,30 @@ export default function BlogArticlePage() {
             <div className="mt-8 p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200">
               <h3 className="font-black text-slate-900 mb-4 text-lg">📤 Share this article</h3>
               <div className="flex flex-wrap gap-4">
+                <PDFDownloadButton 
+                  post={{
+                    id: article.id,
+                    title: article.title,
+                    content: article.content,
+                    author: article.author.name,
+                    publishedAt: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    tags: article.tags,
+                    category: article.category,
+                    excerpt: article.excerpt,
+                    imageUrl: article.imageUrl,
+                    featured: article.featured
+                  }}
+                  variant="outline"
+                  size="md"
+                  className="border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
+                />
                 <button 
                   onClick={() => {
                     const url = window.location.href;
                     const text = article.title;
                     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
                   }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
-                >
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl">
                   🐦 Share on Twitter
                 </button>
                 <button 
