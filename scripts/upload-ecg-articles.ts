@@ -149,13 +149,28 @@ const ecgArticles = [
   }
 ];
 
+// Helper function to generate URL-friendly slugs
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
 async function uploadArticles() {
   console.log('Starting to upload articles...');
   
   for (const [index, ecg] of ecgArticles.entries()) {
     try {
+      const title = `${ecg.condition}: ECG Recognition and Clinical Management`;
+      const slug = generateSlug(title);
+      
       const article = {
-        title: `${ecg.condition}: ECG Recognition and Clinical Management`,
+        title,
+        slug,
         excerpt: `Comprehensive guide to recognizing ${ecg.condition} on ECG, understanding its clinical significance, and implementing evidence-based management strategies.`,
         content: generateDetailedContent(ecg),
         imageUrl: `/clean_rhythm_ecg/${ecg.filename}`,
@@ -165,10 +180,14 @@ async function uploadArticles() {
         updatedAt: Timestamp.now(),
         views: 0,
         featured: index < 5, // First 5 are featured
-        author: getAuthor(index),
+        author: {
+          name: getAuthor(index),
+          title: 'MD, Cardiologist',
+          avatar: '/logo/ecg_kid_logo.png'
+        },
       };
 
-      const docRef = await addDoc(collection(db, 'news'), article);
+      const docRef = await addDoc(collection(db, 'blog'), article);
       console.log(`✓ Uploaded: ${ecg.condition} (ID: ${docRef.id})`);
       
       // Small delay to avoid rate limiting
@@ -182,7 +201,7 @@ async function uploadArticles() {
   console.log('\n✅ Article upload complete!');
 }
 
-function generateDetailedContent(ecg) {
+function generateDetailedContent(ecg: any) {
   return `# ${ecg.condition}: Complete ECG Guide
 
 ## Overview
@@ -195,7 +214,7 @@ ${ecg.condition} is ${getOverviewText(ecg.condition)}.
 **Heart Rate**: ${ecg.rate}
 
 **Key ECG Findings**:
-${ecg.keyFeatures.map(feature => `- ${feature}`).join('\n')}
+${ecg.keyFeatures.map((feature: string) => `- ${feature}`).join('\n')}
 
 ### Recognition Tips:
 ${getRecognitionTips(ecg.condition)}
@@ -259,12 +278,12 @@ Understanding ${ecg.condition} is essential for:
 ${getCallToAction(ecg.condition)}`;
 }
 
-function getCategory(condition) {
+function getCategory(condition: string): string {
   const emergencies = ['Ventricular Fibrillation', 'Ventricular Tachycardia', 'Third Degree (Complete) Heart Block', 'Torsades de Pointes'];
   return emergencies.includes(condition) ? 'clinical' : 'education';
 }
 
-function getAuthor(index) {
+function getAuthor(index: number): string {
   const authors = [
     'Dr. Sarah Mitchell, MD, FACC',
     'Dr. James Chen, MD',
@@ -276,9 +295,9 @@ function getAuthor(index) {
   return authors[index % authors.length];
 }
 
-function getOverviewText(condition) {
+function getOverviewText(condition: string): string {
   // Return specific overview based on condition
-  const overviews = {
+  const overviews: { [key: string]: string } = {
     'Atrial Fibrillation': 'the most common sustained cardiac arrhythmia, affecting millions worldwide',
     'Normal Sinus Rhythm': 'the normal electrical rhythm of the heart, serving as the baseline for comparison',
     'Ventricular Fibrillation': 'a life-threatening emergency requiring immediate defibrillation',
@@ -288,47 +307,47 @@ function getOverviewText(condition) {
 }
 
 // Add helper functions for content generation...
-function getRecognitionTips(condition) {
+function getRecognitionTips(condition: string): string {
   return '1. Systematically assess rate, rhythm, and morphology\n2. Compare to normal sinus rhythm\n3. Look for characteristic features\n4. Consider clinical context';
 }
 
-function getHemodynamicImpact(condition) {
+function getHemodynamicImpact(condition: string): string {
   return 'Understanding the hemodynamic consequences is critical for appropriate management and risk stratification.';
 }
 
-function getCommonCauses(condition) {
+function getCommonCauses(condition: string): string {
   return '- Coronary artery disease\n- Structural heart disease\n- Electrolyte imbalances\n- Medications\n- Increased sympathetic tone';
 }
 
-function getImmediateAssessment(condition) {
+function getImmediateAssessment(condition: string): string {
   return '1. Check vital signs and hemodynamic stability\n2. Assess symptoms (chest pain, dyspnea, syncope)\n3. Review medications and electrolytes\n4. Obtain 12-lead ECG';
 }
 
-function getReferralCriteria(condition) {
+function getReferralCriteria(condition: string): string {
   return 'Consider cardiology consultation for recurrent episodes, hemodynamic instability, or need for specialized interventions.';
 }
 
-function getDifferentials(condition) {
+function getDifferentials(condition: string): string {
   return 'Other rhythms to consider in the differential diagnosis based on ECG appearance and clinical presentation.';
 }
 
-function getTeachingPoints(condition) {
+function getTeachingPoints(condition: string): string {
   return '- Accurate identification requires systematic approach\n- Clinical context is essential\n- Treatment should be evidence-based\n- Monitor for complications';
 }
 
-function getCommonPitfalls(condition) {
+function getCommonPitfalls(condition: string): string {
   return '- Misinterpreting artifact as true rhythm\n- Over-treating benign variants\n- Under-treating emergencies\n- Not correlating ECG with clinical status';
 }
 
-function getGuidelines(condition) {
+function getGuidelines(condition: string): string {
   return 'Current guidelines recommend individualized approach based on symptoms, hemodynamics, and underlying heart disease.';
 }
 
-function getCaseExample(condition) {
+function getCaseExample(condition: string): string {
   return 'A 65-year-old patient presents with palpitations. ECG shows characteristic findings consistent with this rhythm. Appropriate management includes...';
 }
 
-function getCallToAction(condition) {
+function getCallToAction(condition: string): string {
   return 'For more detailed information and clinical cases, explore our comprehensive ECG library and interactive learning modules.';
 }
 

@@ -44,8 +44,8 @@ export class BlogPDFGenerator {
       // Add content
       await this.addContent(post.content);
       
-      // Add footer with branding
-      this.addFooter();
+      // Add footer to all pages
+      this.addFooterToAllPages();
       
       // Download the PDF
       this.pdf.save(`${this.sanitizeFilename(post.title)}.pdf`);
@@ -135,7 +135,7 @@ export class BlogPDFGenerator {
     // Create a temporary div with styled content
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = this.processMarkdownContent(content);
-    tempDiv.style.width = `${this.pageWidth - (this.margin * 2)}mm`;
+    tempDiv.style.width = `${(this.pageWidth - (this.margin * 2)) * 3.78}px`; // Convert mm to px
     tempDiv.style.fontFamily = 'Arial, sans-serif';
     tempDiv.style.fontSize = '12px';
     tempDiv.style.lineHeight = '1.6';
@@ -178,9 +178,9 @@ export class BlogPDFGenerator {
     document.body.appendChild(tempDiv);
     
     try {
-      // Convert HTML content to canvas
+      // Convert HTML content to canvas with higher resolution
       const canvas = await html2canvas(tempDiv, {
-        scale: 2,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
@@ -192,19 +192,81 @@ export class BlogPDFGenerator {
       const imgWidth = this.pageWidth - (this.margin * 2);
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
-      // Check if content fits on current page
-      if (this.currentY + imgHeight > this.pageHeight - this.margin) {
-        this.pdf.addPage();
-        this.currentY = this.margin;
-      }
+      // Calculate available space on current page
+      const availableHeight = this.pageHeight - this.currentY - this.margin;
       
-      this.pdf.addImage(imgData, 'PNG', this.margin, this.currentY, imgWidth, imgHeight);
-      this.currentY += imgHeight + 10;
+      if (imgHeight <= availableHeight) {
+        // Content fits on current page
+        this.pdf.addImage(imgData, 'PNG', this.margin, this.currentY, imgWidth, imgHeight);
+        this.currentY += imgHeight + 10;
+      } else {
+        // Content needs to be split across multiple pages
+        await this.addContentAcrossPages(canvas, imgWidth, imgHeight);
+      }
       
     } finally {
       // Clean up
       document.body.removeChild(tempDiv);
       document.head.removeChild(styleElement);
+    }
+  }
+
+  private async addContentAcrossPages(canvas: HTMLCanvasElement, imgWidth: number, imgHeight: number): Promise<void> {
+    const pageContentHeight = this.pageHeight - (this.margin * 2);
+    const availableHeight = this.pageHeight - this.currentY - this.margin;
+    
+    // Calculate how many pages we need
+    const remainingHeight = imgHeight - availableHeight;
+    const additionalPages = Math.ceil(remainingHeight / pageContentHeight);
+    
+    // Create a canvas for the current page
+    const currentPageCanvas = document.createElement('canvas');
+    const currentCtx = currentPageCanvas.getContext('2d');
+    currentPageCanvas.width = canvas.width;
+    currentPageCanvas.height = (availableHeight * canvas.height) / imgHeight;
+    
+    if (currentCtx) {
+      // Draw the portion that fits on current page
+      currentCtx.drawImage(
+        canvas,
+        0, 0, canvas.width, currentPageCanvas.height,
+        0, 0, canvas.width, currentPageCanvas.height
+      );
+      
+      const currentPageData = currentPageCanvas.toDataURL('image/png');
+      this.pdf.addImage(currentPageData, 'PNG', this.margin, this.currentY, imgWidth, availableHeight);
+    }
+    
+    // Add remaining content on new pages
+    let remainingCanvasHeight = canvas.height - currentPageCanvas.height;
+    let sourceY = currentPageCanvas.height;
+    
+    for (let i = 0; i < additionalPages; i++) {
+      this.pdf.addPage();
+      this.currentY = this.margin;
+      
+      const pageCanvas = document.createElement('canvas');
+      const pageCtx = pageCanvas.getContext('2d');
+      
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = Math.min(remainingCanvasHeight, (pageContentHeight * canvas.height) / imgHeight);
+      
+      if (pageCtx) {
+        pageCtx.drawImage(
+          canvas,
+          0, sourceY, canvas.width, pageCanvas.height,
+          0, 0, canvas.width, pageCanvas.height
+        );
+        
+        const pageData = pageCanvas.toDataURL('image/png');
+        const pageImgHeight = (pageCanvas.height * imgWidth) / canvas.width;
+        
+        this.pdf.addImage(pageData, 'PNG', this.margin, this.currentY, imgWidth, pageImgHeight);
+        this.currentY += pageImgHeight + 10;
+        
+        sourceY += pageCanvas.height;
+        remainingCanvasHeight -= pageCanvas.height;
+      }
     }
   }
 
@@ -239,6 +301,32 @@ export class BlogPDFGenerator {
     html = html.replace(/### (Clinical Significance|Management|Treatment):?\s*/gi, '</div><div class="highlight"><h3>$1</h3>');
     
     return html;
+  }
+
+  private addFooterToAllPages(): void {
+    const totalPages = this.pdf.getNumberOfPages();
+    
+    for (let i = 1; i <= totalPages; i++) {
+      this.pdf.setPage(i);
+      
+      const footerY = this.pageHeight - 15;
+      
+      // Footer background
+      this.pdf.setFillColor(249, 250, 251);
+      this.pdf.rect(0, footerY - 5, this.pageWidth, 20, 'F');
+      
+      // Footer text
+      this.pdf.setTextColor(107, 114, 128);
+      this.pdf.setFontSize(8);
+      this.pdf.setFont('helvetica', 'normal');
+      
+      const footerText = 'Generated by E-PulsePoints | ECG Learning Platform | ecgkid.com';
+      const textWidth = this.pdf.getTextWidth(footerText);
+      this.pdf.text(footerText, (this.pageWidth - textWidth) / 2, footerY);
+      
+      // Page number
+      this.pdf.text(`Page ${i} of ${totalPages}`, this.pageWidth - this.margin, footerY);
+    }
   }
 
   private addFooter(): void {
