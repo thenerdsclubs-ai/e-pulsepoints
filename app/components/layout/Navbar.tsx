@@ -10,6 +10,7 @@ const Navbar = () => {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/learn-ecg', label: 'Learn ECG' },
+    { href: '/tools', label: 'Tools' },
     { href: '/app', label: 'App' },
     { href: '/blog', label: 'Blog' },
     { href: '/forum', label: 'Community' },
