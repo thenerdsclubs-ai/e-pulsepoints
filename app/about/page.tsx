@@ -9,7 +9,22 @@ import MascotImage from '../components/ui/MascotImage';
 export const metadata: Metadata = {
   title: 'About E-PulsePoints - Mission & Vision for ECG Medical Education',
   description: 'Learn about E-PulsePoints mission to transform ECG education for medical professionals. Our vision for accessible, interactive, and expert-guided learning.',
-  keywords: ['about E-PulsePoints', 'ECG education mission', 'medical education platform', 'team'],
+  keywords: ['about E-PulsePoints', 'ECG education mission', 'medical education platform', 'team', 'cardiology education', 'medical learning'],
+  openGraph: {
+    title: 'About E-PulsePoints - Our Mission',
+    description: 'Transforming ECG education for medical professionals through accessible, interactive learning.',
+    url: 'https://ecgkid.com/about',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About E-PulsePoints',
+    description: 'Transforming ECG education for medical professionals.',
+  },
+  alternates: {
+    canonical: 'https://ecgkid.com/about',
+  },
 };
 
 export default function AboutPage() {
@@ -339,7 +354,7 @@ export default function AboutPage() {
               We're always looking for partnerships with medical institutions, educators, 
               and technology innovators who share our vision.
             </p>
-            <Link href="mailto:partnerships@epulsepoints.com" className="btn-secondary">
+            <Link href="mailto:partnerships@ecgkid.com" className="btn-secondary">
               Contact Us
             </Link>
           </div>

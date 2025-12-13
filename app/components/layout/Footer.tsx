@@ -44,7 +44,7 @@ const Footer = () => {
               <div className="relative w-10 h-10">
                 <Image
                   src="/logo/logo.png"
-                  alt="E-PulsePoints Logo"
+                  alt="E-PulsePoints logo - medical education brand mark for ECG learning platform"
                   width={40}
                   height={40}
                   className="w-full h-full object-contain"

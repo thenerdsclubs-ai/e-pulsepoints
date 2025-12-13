@@ -287,7 +287,7 @@ export default function BlogPage() {
                         {getValidImageUrl(currentPosts[0].imageUrl) ? (
                           <Image
                             src={getValidImageUrl(currentPosts[0].imageUrl)!}
-                            alt={currentPosts[0].title}
+                            alt={`${currentPosts[0].title} - Featured ECG medical education article cover image`}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -355,7 +355,7 @@ export default function BlogPage() {
                         {getValidImageUrl(post.imageUrl) ? (
                           <Image
                             src={getValidImageUrl(post.imageUrl)!}
-                            alt={post.title}
+                            alt={`${post.title} - ECG medical education article thumbnail with ${post.tags.slice(0, 2).join(' and ')} topics`}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />

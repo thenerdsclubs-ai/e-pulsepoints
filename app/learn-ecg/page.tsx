@@ -7,9 +7,24 @@ import AppCTAButton from '../components/ui/AppCTAButton';
 import MascotImage from '../components/ui/MascotImage';
 
 export const metadata: Metadata = {
-  title: 'Learn ECG Interpretation - E-PulsePoints',
-  description: 'Master ECG interpretation with our comprehensive educational content. From basic rhythm analysis to advanced cardiac conditions - structured learning for medical professionals.',
-  keywords: ['ECG learning', 'EKG interpretation', 'cardiac rhythm', 'medical education', 'cardiology'],
+  title: 'Learn ECG Interpretation - Interactive Tutorials & MI Case Studies',
+  description: 'Master ECG interpretation with comprehensive tutorials, real MI cases, and expert guidance. From basic rhythms to advanced cardiac conditions - structured learning for medical professionals.',
+  keywords: ['ECG learning', 'EKG interpretation', 'cardiac rhythm', 'medical education', 'cardiology', 'MI cases', 'arrhythmia', 'ECG tutorial'],
+  openGraph: {
+    title: 'Learn ECG Interpretation',
+    description: 'Master ECG interpretation with comprehensive tutorials and real MI cases.',
+    url: 'https://ecgkid.com/learn-ecg',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Learn ECG Interpretation',
+    description: 'Master ECG interpretation with comprehensive tutorials.',
+  },
+  alternates: {
+    canonical: 'https://ecgkid.com/learn-ecg',
+  },
 };
 
 export default function LearnECGPage() {

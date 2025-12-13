@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://epulsepoints.com/sitemap.xml',
+    sitemap: 'https://ecgkid.com/sitemap.xml',
   };
 }

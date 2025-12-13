@@ -7,6 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
+import { generateArticleSchema } from '@/lib/schemas';
 
 interface Article {
   id: string;
@@ -114,9 +115,37 @@ export default function BlogArticlePage() {
     );
   }
 
+  // Generate Article Schema
+  const articleSchema = generateArticleSchema({
+    headline: article.title,
+    description: article.excerpt,
+    url: `https://ecgkid.com/blog/${article.slug || article.id}`,
+    datePublished: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+    dateModified: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+    author: {
+      name: article.author.name,
+      title: article.author.title,
+      avatar: article.author.avatar,
+    },
+    image: {
+      url: article.imageUrl.startsWith('http') ? article.imageUrl : `https://ecgkid.com${article.imageUrl}`,
+      width: 1200,
+      height: 630,
+      alt: article.title,
+    },
+    keywords: article.tags,
+    articleSection: article.category,
+  }, 'BlogPosting');
+
   return (
     <>
-      {/* Rich Snippet JSON-LD */}
+      {/* Article Schema JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+
+      {/* Legacy schema support (if article has custom schema) */}
       {article.schema && (
         <script
           type="application/ld+json"
@@ -161,7 +190,7 @@ export default function BlogArticlePage() {
             <div className="flex items-center gap-4">
               <Image
                 src={article.author.avatar}
-                alt={article.author.name}
+                alt={`${article.author.name} - ${article.author.title} profile photo`}
                 width={56}
                 height={56}
                 className="rounded-full border-4 border-white/20"
@@ -248,7 +277,7 @@ export default function BlogArticlePage() {
               <div className="flex items-start gap-4">
                 <Image
                   src={article.author.avatar}
-                  alt={article.author.name}
+                  alt={`${article.author.name}, ${article.author.title} - medical expert and article author headshot`}
                   width={80}
                   height={80}
                   className="rounded-full border-4 border-white shadow-lg"

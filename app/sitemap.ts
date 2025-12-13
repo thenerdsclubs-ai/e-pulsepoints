@@ -3,7 +3,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://epulsepoints.com';
+  const baseUrl = 'https://ecgkid.com';
 
   // Static pages with their priorities
   const staticPages = [

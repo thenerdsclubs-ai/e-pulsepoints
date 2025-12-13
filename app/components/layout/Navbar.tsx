@@ -25,7 +25,7 @@ const Navbar = () => {
             <div className="relative w-10 h-10 lg:w-12 lg:h-12">
               <Image
                 src="/logo/logo.png"
-                alt="E-PulsePoints Logo"
+                alt="E-PulsePoints logo - heart with ECG waveform representing cardiac education platform"
                 width={48}
                 height={48}
                 className="w-full h-full object-contain"
@@ -55,6 +55,12 @@ const Navbar = () => {
 
           {/* Get App CTA */}
           <div className="hidden lg:flex items-center space-x-4">
+            <Link
+              href="/login"
+              className="text-gray-700 hover:text-green-600 font-semibold transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-green-50"
+            >
+              Login
+            </Link>
             <Link
               href="https://play.google.com/store/apps/details?id=com.ecgkid.pulsepoints"
               target="_blank"
@@ -93,7 +99,14 @@ const Navbar = () => {
                   {item.label}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-gray-100">
+              <div className="pt-4 border-t border-gray-100 space-y-3">
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block text-center text-green-600 hover:text-green-700 font-bold py-3 px-4 rounded-lg border-2 border-green-600 hover:bg-green-50 transition-colors"
+                >
+                  Login
+                </Link>
                 <Link
                   href="https://play.google.com/store/apps/details?id=com.ecgkid.pulsepoints"
                   target="_blank"

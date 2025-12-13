@@ -4,6 +4,9 @@ import { useState } from 'react';
 import Section from '../components/ui/Section';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { Metadata } from 'next';
+
+// Note: metadata export doesn't work in client components, so we'll add it via layout or move to server component
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -150,7 +153,7 @@ export default function ContactPage() {
             <div className="text-center">
               <div className="text-4xl mb-4">📧</div>
               <h3 className="text-lg font-bold text-slate-900 mb-2">Email</h3>
-              <p className="text-slate-600">support@epulsepoints.com</p>
+              <p className="text-slate-600">support@ecgkid.com</p>
             </div>
             <div className="text-center">
               <div className="text-4xl mb-4">💬</div>

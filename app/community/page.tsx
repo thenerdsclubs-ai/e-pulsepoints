@@ -7,9 +7,24 @@ import AppCTAButton from '../components/ui/AppCTAButton';
 import MascotImage from '../components/ui/MascotImage';
 
 export const metadata: Metadata = {
-  title: 'ECG Learning Community - E-PulsePoints',
-  description: 'Join the E-PulsePoints community of medical professionals. Compete on leaderboards, participate in challenges, and learn together in our mobile app.',
-  keywords: ['ECG community', 'medical students community', 'learning community', 'medical app community'],
+  title: 'ECG Learning Community - Join Medical Professionals Worldwide',
+  description: 'Join the E-PulsePoints community of medical professionals. Compete on leaderboards, participate in challenges, and connect with peers in our mobile app.',
+  keywords: ['ECG community', 'medical students community', 'learning community', 'medical app community', 'cardiology forum', 'medical professionals'],
+  openGraph: {
+    title: 'ECG Learning Community',
+    description: 'Join medical professionals worldwide in our ECG learning community.',
+    url: 'https://ecgkid.com/community',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ECG Learning Community',
+    description: 'Join medical professionals worldwide.',
+  },
+  alternates: {
+    canonical: 'https://ecgkid.com/community',
+  },
 };
 
 export default function CommunityPage() {

@@ -5,6 +5,36 @@ import Card from './components/ui/Card';
 import AppCTAButton from './components/ui/AppCTAButton';
 import MascotImage from './components/ui/MascotImage';
 import ImageCarousel from './components/ui/ImageCarousel';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'E-PulsePoints - Master ECG Interpretation | Free ECG Learning Platform',
+  description: 'Learn ECG interpretation with interactive tutorials, practice MI cases, and join our community of medical professionals. Download our free mobile app for iOS and Android.',
+  keywords: ['ECG learning', 'EKG interpretation', 'medical education', 'MI cases', 'arrhythmia', 'cardiology', 'medical students', 'nursing education', 'free ECG app'],
+  openGraph: {
+    title: 'E-PulsePoints - Master ECG Interpretation',
+    description: 'Learn ECG interpretation with interactive tutorials, practice MI cases, and join our community of medical professionals.',
+    url: 'https://ecgkid.com',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'E-PulsePoints ECG Learning Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'E-PulsePoints - Master ECG Interpretation',
+    description: 'Learn ECG interpretation with interactive tutorials, practice MI cases, and join our community.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://ecgkid.com',
+  },
+};
 
 export default function HomePage() {
   return (
@@ -81,7 +111,7 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-white/10 rounded-3xl backdrop-blur-sm"></div>
                   <Image
                     src="/lesson-demo-assets/lesson-main.jpg"
-                    alt="Interactive ECG Learning Dashboard"
+                    alt="E-PulsePoints interactive ECG learning dashboard showing real-time heart rhythm analysis and educational modules"
                     fill
                     className="object-contain rounded-3xl relative z-10 drop-shadow-2xl"
                     priority
@@ -94,7 +124,7 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-yellow-400/40 rounded-full blur-lg"></div>
                     <MascotImage 
                       src="/mascots/heart-mascot-hello.png"
-                      alt="Heart mascot welcoming users"
+                      alt="Dr. Pulse, the E-PulsePoints heart mascot character, welcoming new medical students to ECG learning platform"
                       size="md"
                       className="relative animate-bounce"
                     />
@@ -124,7 +154,7 @@ export default function HomePage() {
               <div className="aspect-[3/4] relative overflow-hidden bg-slate-50">
                 <Image
                   src="/lesson-demo-assets/lesson-first.jpg"
-                  alt="ECG Learning Fundamentals"
+                  alt="ECG learning fundamentals course interface showing basic cardiac rhythm patterns and wave interpretation"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
                 />
@@ -150,7 +180,7 @@ export default function HomePage() {
               <div className="aspect-[3/4] relative overflow-hidden bg-slate-50">
                 <Image
                   src="/lesson-demo-assets/ecg-simulator.jpg"
-                  alt="Interactive ECG Practice"
+                  alt="Interactive ECG simulator with real patient cases, gamified challenges, and instant diagnostic feedback system"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
                 />
@@ -171,7 +201,7 @@ export default function HomePage() {
               <div className="aspect-[3/4] relative overflow-hidden bg-slate-50">
                 <Image
                   src="/lesson-demo-assets/community-tab.jpg"
-                  alt="Expert Consultation"
+                  alt="E-PulsePoints community forum showing medical professionals discussing ECG cases and expert consultation feature"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
                 />
@@ -301,7 +331,7 @@ export default function HomePage() {
               <div className="aspect-[4/5] max-w-sm mx-auto relative">
                 <Image
                   src="/lesson-demo-assets/ecg-simulator.jpg"
-                  alt="ECG Simulator Interface"
+                  alt="Real-time ECG simulator interface with patient case studies, heart rhythm analysis tools, and diagnostic feedback"
                   fill
                   className="object-contain rounded-2xl shadow-xl"
                 />
@@ -310,7 +340,7 @@ export default function HomePage() {
               <div className="absolute -bottom-4 -left-4">
                 <MascotImage 
                   src="/mascots/Dr. Pulse_teaching.png"
-                  alt="Dr. Pulse teaching"
+                  alt="Dr. Pulse mascot in teaching pose, explaining ECG interpretation concepts to medical students"
                   size="md"
                 />
               </div>
@@ -328,7 +358,7 @@ export default function HomePage() {
               <div className="aspect-[4/5] max-w-sm mx-auto relative">
                 <Image
                   src="/lesson-demo-assets/flashcards.jpg"
-                  alt="Smart Flashcards System"
+                  alt="AI-powered spaced repetition flashcard system for ECG rhythm patterns and cardiac arrhythmia learning"
                   fill
                   className="object-contain rounded-2xl shadow-xl"
                 />
@@ -337,7 +367,7 @@ export default function HomePage() {
               <div className="absolute -top-3 -right-3">
                 <MascotImage 
                   src="/mascots/heart-mascot-thinking.png"
-                  alt="Heart mascot thinking"
+                  alt="Dr. Pulse mascot in thoughtful pose, encouraging critical thinking in ECG interpretation"
                   size="sm"
                 />
               </div>

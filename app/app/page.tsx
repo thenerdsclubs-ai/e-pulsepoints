@@ -8,9 +8,24 @@ import MascotImage from '../components/ui/MascotImage';
 import ImageCarousel from '../components/ui/ImageCarousel';
 
 export const metadata: Metadata = {
-  title: 'E-PulsePoints Mobile App - Gamified ECG Learning Platform',
-  description: 'Download the E-PulsePoints app for interactive ECG practice, quizzes, exams, and gamified learning. Turn medical education into an engaging game!',
-  keywords: ['ECG app', 'medical app', 'ECG practice', 'cardiology app', 'gamified medical education'],
+  title: 'Download E-PulsePoints App - Free ECG Learning App for iOS & Android',
+  description: 'Download the E-PulsePoints app for interactive ECG practice, quizzes, exams, and gamified learning. Turn medical education into an engaging game! Available on iOS and Android.',
+  keywords: ['ECG app', 'EKG app download', 'medical education app', 'cardiology app', 'gamified medical education', 'free ECG app', 'iOS Android'],
+  openGraph: {
+    title: 'Download E-PulsePoints Mobile App',
+    description: 'Interactive ECG learning app with gamified content. Available on iOS and Android.',
+    url: 'https://ecgkid.com/app',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'E-PulsePoints Mobile App',
+    description: 'Interactive ECG learning app with gamified content.',
+  },
+  alternates: {
+    canonical: 'https://ecgkid.com/app',
+  },
 };
 
 export default function AppPage() {
