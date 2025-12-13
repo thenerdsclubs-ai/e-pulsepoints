@@ -32,7 +32,8 @@ export default function BlogPage() {
     try {
       setLoading(true);
       const postsRef = collection(db, 'blog');
-      const q = query(postsRef, orderBy('publishedAt', 'desc'));
+      // Limit to 50 posts for faster loading
+      const q = query(postsRef, orderBy('publishedAt', 'desc'), limit(50));
       
       const querySnapshot = await getDocs(q);
       const fetchedPosts: BlogPost[] = [];

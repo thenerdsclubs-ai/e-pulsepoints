@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 interface AppCTAButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   showBoth?: boolean;
   className?: string;
 }
@@ -25,6 +25,7 @@ const AppCTAButton = ({
     sm: 'py-3 px-6 text-sm',
     md: 'py-4 px-8 text-base',
     lg: 'py-5 px-10 text-lg',
+    xl: 'py-6 px-12 text-xl',
   };
 
   const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;

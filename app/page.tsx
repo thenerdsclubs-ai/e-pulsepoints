@@ -157,6 +157,7 @@ export default function HomePage() {
                   alt="ECG learning fundamentals course interface showing basic cardiac rhythm patterns and wave interpretation"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
                 />
               </div>
               <div className="p-6">
@@ -183,6 +184,7 @@ export default function HomePage() {
                   alt="Interactive ECG simulator with real patient cases, gamified challenges, and instant diagnostic feedback system"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
                 />
               </div>
               <div className="p-6">
@@ -204,6 +206,7 @@ export default function HomePage() {
                   alt="E-PulsePoints community forum showing medical professionals discussing ECG cases and expert consultation feature"
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
                 />
               </div>
               <div className="p-6">
@@ -334,6 +337,7 @@ export default function HomePage() {
                   alt="Real-time ECG simulator interface with patient case studies, heart rhythm analysis tools, and diagnostic feedback"
                   fill
                   className="object-contain rounded-2xl shadow-xl"
+                  loading="lazy"
                 />
               </div>
               
@@ -361,6 +365,7 @@ export default function HomePage() {
                   alt="AI-powered spaced repetition flashcard system for ECG rhythm patterns and cardiac arrhythmia learning"
                   fill
                   className="object-contain rounded-2xl shadow-xl"
+                  loading="lazy"
                 />
               </div>
               

@@ -269,7 +269,7 @@ export default function BlogStatsPage() {
                       key={tag}
                       className="px-4 py-2 bg-white border-2 border-blue-200 rounded-full text-sm font-semibold text-slate-700"
                     >
-                      #{tag} ({count})
+                      #{tag} ({String(count)})
                     </span>
                   ))}
               </div>

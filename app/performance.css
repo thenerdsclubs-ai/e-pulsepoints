@@ -1,0 +1,71 @@
+/** 
+ * Performance CSS Utilities
+ * Optimize rendering and reduce paint times
+ */
+
+/* GPU-accelerated animations */
+@layer utilities {
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Optimize font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Reduce layout shifts */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-gradient {
+  background: linear-gradient(135deg, #1e40af 0%, #7e22ce 50%, #be185d 100%);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Optimize blur effects */
+.optimized-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+.no-fouc {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Optimize gradient backgrounds */
+.gradient-optimized {
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+}

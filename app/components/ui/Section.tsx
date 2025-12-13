@@ -4,7 +4,7 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   backgroundVariant?: 'white' | 'gray' | 'gradient';
-  padding?: 'sm' | 'md' | 'lg' | 'xl';
+  padding?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   id?: string;
 }
 
@@ -26,6 +26,7 @@ const Section = ({
     md: 'py-12 md:py-16',
     lg: 'py-16 md:py-20 lg:py-24',
     xl: 'py-20 md:py-24 lg:py-32',
+    '2xl': 'py-24 md:py-32 lg:py-40',
   };
 
   return (

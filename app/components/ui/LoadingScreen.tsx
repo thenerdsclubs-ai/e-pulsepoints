@@ -5,6 +5,9 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
 export default function LoadingScreen() {
+  // Disabled for performance - instant navigation
+  return null;
+  
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 
