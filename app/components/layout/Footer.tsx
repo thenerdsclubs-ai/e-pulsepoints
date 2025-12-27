@@ -9,8 +9,8 @@ const Footer = () => {
       title: 'Platform',
       links: [
         { href: '/learn-ecg', label: 'Learn ECG' },
+        { href: '/videos', label: 'Videos' },
         { href: '/app', label: 'Mobile App' },
-        { href: '/community', label: 'Community' },
       ],
     },
     {

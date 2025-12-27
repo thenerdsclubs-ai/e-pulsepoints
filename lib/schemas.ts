@@ -248,3 +248,190 @@ export function generateHowToSchema(input: {
     })),
   };
 }
+
+/**
+ * Generate MedicalWebPage schema for health content
+ */
+export function generateMedicalWebPageSchema(input: {
+  name: string;
+  description: string;
+  url: string;
+  datePublished: string;
+  dateModified?: string;
+  author: AuthorInput;
+  image?: ImageObjectInput;
+  medicalAudience?: 'Patient' | 'Practitioner';
+  specialty?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    datePublished: input.datePublished,
+    dateModified: input.dateModified || input.datePublished,
+    author: generatePersonSchema(input.author),
+    image: input.image ? generateImageObject(input.image) : undefined,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': input.url,
+    },
+    medicalAudience: input.medicalAudience ? {
+      '@type': 'MedicalAudience',
+      audienceType: input.medicalAudience,
+    } : undefined,
+    specialty: input.specialty,
+    publisher: generateOrganizationSchema(
+      'E-PulsePoints',
+      'https://ecgkid.com',
+      {
+        url: 'https://ecgkid.com/logo/logo.png',
+        width: 512,
+        height: 512,
+        alt: 'E-PulsePoints logo',
+      },
+      'E-PulsePoints - Master ECG interpretation through interactive learning'
+    ),
+  };
+}
+
+/**
+ * Generate MedicalCondition schema
+ */
+export function generateMedicalConditionSchema(input: {
+  name: string;
+  description: string;
+  url: string;
+  alternateName?: string[];
+  symptoms?: string[];
+  causes?: string[];
+  treatments?: string[];
+  riskFactors?: string[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalCondition',
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    alternateName: input.alternateName,
+    signOrSymptom: input.symptoms?.map(symptom => ({
+      '@type': 'MedicalSignOrSymptom',
+      name: symptom,
+    })),
+    possibleCause: input.causes?.map(cause => ({
+      '@type': 'MedicalCause',
+      name: cause,
+    })),
+    possibleTreatment: input.treatments?.map(treatment => ({
+      '@type': 'MedicalTherapy',
+      name: treatment,
+    })),
+    riskFactor: input.riskFactors,
+  };
+}
+
+/**
+ * Generate enhanced VideoObject schema with educational properties
+ */
+export function generateEducationalVideoSchema(input: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  contentUrl?: string;
+  embedUrl?: string;
+  duration?: string;
+  transcript?: string;
+  category?: string;
+  learningResourceType?: 'Tutorial' | 'Demonstration' | 'Case Study';
+  educationalLevel?: 'Beginner' | 'Intermediate' | 'Advanced';
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['VideoObject', 'LearningResource'],
+    name: input.name,
+    description: input.description,
+    thumbnailUrl: input.thumbnailUrl,
+    uploadDate: input.uploadDate,
+    contentUrl: input.contentUrl,
+    embedUrl: input.embedUrl,
+    duration: input.duration,
+    transcript: input.transcript,
+    genre: input.category,
+    learningResourceType: input.learningResourceType,
+    educationalLevel: input.educationalLevel,
+    publisher: generateOrganizationSchema(
+      'E-PulsePoints',
+      'https://ecgkid.com',
+      {
+        url: 'https://ecgkid.com/logo/logo.png',
+        width: 512,
+        height: 512,
+        alt: 'E-PulsePoints logo',
+      },
+      'E-PulsePoints - Master ECG interpretation through interactive learning'
+    ),
+    inLanguage: 'en-US',
+  };
+}
+
+/**
+ * Generate WebSite schema with search functionality
+ */
+export function generateWebSiteSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'E-PulsePoints - ECG Kid',
+    description: 'Master ECG interpretation through interactive learning, practice tests, and expert-guided video tutorials.',
+    url: 'https://ecgkid.com',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://ecgkid.com/blog?search={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'E-PulsePoints',
+      url: 'https://ecgkid.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://ecgkid.com/logo/logo.png',
+        width: 512,
+        height: 512,
+      },
+    },
+  };
+}
+
+/**
+ * Generate ItemList schema for blog/video listings
+ */
+export function generateItemListSchema(input: {
+  name: string;
+  description: string;
+  url: string;
+  items: { name: string; url: string; image?: string; description?: string }[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: input.name,
+    description: input.description,
+    url: input.url,
+    numberOfItems: input.items.length,
+    itemListElement: input.items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: item.url,
+      image: item.image,
+      description: item.description,
+    })),
+  };
+}

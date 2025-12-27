@@ -1,132 +1,49 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc, increment, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { getArticleBySlug, getAllArticleSlugs, getRelatedArticles } from '@/lib/articles';
+import { findRelatedVideos } from '@/lib/crossLinking';
+import { processBlogContent } from '@/lib/contentProcessor';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Head from 'next/head';
-import { generateArticleSchema } from '@/lib/schemas';
-import PDFDownloadButton, { PDFDownloadCard } from '@/app/components/blog/PDFDownloadButton';
+import Image from 'next/image';
+import { generateArticleSchema, generateMedicalWebPageSchema, generateBreadcrumbSchema } from '@/lib/schemas';
+import PDFDownloadButton from '@/app/components/blog/PDFDownloadButton';
+import ShareButtons from '@/app/components/blog/ShareButtons';
+import { RelatedVideos, RelatedArticles } from '@/app/components/content/RelatedContent';
 
-interface Article {
-  id: string;
-  slug?: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  imageUrl: string;
-  category: string;
-  tags: string[];
-  author: {
-    name: string;
-    title: string;
-    avatar: string;
-  };
-  publishedAt: any;
-  views: number;
-  featured: boolean;
-  schema?: any;
-  seo?: {
-    metaTitle: string;
-    metaDescription: string;
-    keywords: string[];
-    canonicalUrl: string;
-    ogTitle: string;
-    ogDescription: string;
-    ogImage: string;
-    twitterCard: string;
-    twitterTitle: string;
-    twitterDescription: string;
-    twitterImage: string;
-  };
+export async function generateStaticParams() {
+  const slugs = getAllArticleSlugs();
+  return slugs.map((slug) => ({
+    id: slug,
+  }));
 }
 
-export default function BlogArticlePage() {
-  const params = useParams();
-  const router = useRouter();
-  const [article, setArticle] = useState<Article | null>(null);
-  const [loading, setLoading] = useState(true);
+export const dynamicParams = false; // Only pre-render known articles
 
-  useEffect(() => {
-    if (params.id) {
-      fetchArticle(params.id as string);
-    }
-  }, [params.id]);
-
-  const fetchArticle = async (slugOrId: string) => {
-    try {
-      // First try to find by slug
-      const blogRef = collection(db, 'blog');
-      const q = query(blogRef, where('slug', '==', slugOrId));
-      const querySnapshot = await getDocs(q);
-      
-      if (!querySnapshot.empty) {
-        const docSnap = querySnapshot.docs[0];
-        const data = { id: docSnap.id, ...docSnap.data() } as Article;
-        setArticle(data);
-        
-        // Increment view count
-        await updateDoc(doc(db, 'blog', docSnap.id), {
-          views: increment(1)
-        });
-      } else {
-        // Fallback to ID lookup
-        const docRef = doc(db, 'blog', slugOrId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = { id: docSnap.id, ...docSnap.data() } as Article;
-          setArticle(data);
-          
-          // Increment view count
-          await updateDoc(docRef, {
-            views: increment(1)
-          });
-        } else {
-          router.push('/blog');
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching article:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading article...</p>
-        </div>
-      </div>
-    );
-  }
-
+export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const article = await getArticleBySlug(id);
+  
   if (!article) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-slate-600">Article not found</p>
-        </div>
-      </div>
-    );
+    notFound();
   }
+
+  const relatedArticles = await getRelatedArticles(article.slug, 3);
+  const relatedVideos = findRelatedVideos(article, 4);
+
+  // Process blog content with all enhancements
+  const contentWithLinks = article.htmlContent 
+    ? processBlogContent(article.content, article.htmlContent, process.env.NODE_ENV === 'development')
+    : processBlogContent(article.content, undefined, false);
 
   // Generate Article Schema
   const articleSchema = generateArticleSchema({
     headline: article.title,
     description: article.excerpt,
-    url: `https://ecgkid.com/blog/${article.slug || article.id}`,
-    datePublished: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-    dateModified: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+    url: `https://ecgkid.com/blog/${article.slug}`,
+    datePublished: new Date(article.publishedAt).toISOString(),
+    dateModified: new Date(article.updatedAt).toISOString(),
     author: {
-      name: article.author.name,
-      title: article.author.title,
-      avatar: article.author.avatar,
+      name: article.author,
+      url: `https://ecgkid.com/author/${article.authorId}`,
     },
     image: {
       url: article.imageUrl.startsWith('http') ? article.imageUrl : `https://ecgkid.com${article.imageUrl}`,
@@ -135,28 +52,66 @@ export default function BlogArticlePage() {
       alt: article.title,
     },
     keywords: article.tags,
-    articleSection: article.category,
-  }, 'BlogPosting');
+  }, 'MedicalWebPage');
+
+  // Generate Medical Web Page Schema for health content
+  const medicalSchema = generateMedicalWebPageSchema({
+    name: article.title,
+    description: article.excerpt,
+    url: `https://ecgkid.com/blog/${article.slug}`,
+    datePublished: new Date(article.publishedAt).toISOString(),
+    dateModified: new Date(article.updatedAt).toISOString(),
+    author: {
+      name: article.author,
+      url: `https://ecgkid.com/author/${article.authorId}`,
+    },
+    image: {
+      url: article.imageUrl.startsWith('http') ? article.imageUrl : `https://ecgkid.com${article.imageUrl}`,
+      width: 1200,
+      height: 630,
+      alt: article.title,
+    },
+    medicalAudience: 'Practitioner',
+    specialty: 'Cardiology',
+  });
+
+  // Generate Breadcrumb Schema
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: 'https://ecgkid.com' },
+    { name: 'Blog', url: 'https://ecgkid.com/blog' },
+    { name: article.title, url: `https://ecgkid.com/blog/${article.slug}` },
+  ]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+  };
 
   return (
     <>
-      {/* Article Schema JSON-LD */}
+      {/* Article Schema */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-
-      {/* Legacy schema support (if article has custom schema) */}
-      {article.schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(article.schema) }}
-        />
-      )}
+      
+      {/* Medical Web Page Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalSchema) }}
+      />
+      
+      {/* Breadcrumb Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
       <div className="min-h-screen bg-slate-50">
-        {/* SEO Meta Tags would go in head component */}
-        
         {/* Header */}
         <div className="bg-white border-b sticky top-0 z-10">
           <div className="container mx-auto px-6 py-4">
@@ -164,7 +119,7 @@ export default function BlogArticlePage() {
               href="/blog"
               className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
             >
-              ← Back to Blog
+              ← Back to Articles
             </Link>
           </div>
         </div>
@@ -172,13 +127,11 @@ export default function BlogArticlePage() {
         {/* Article Header */}
         <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white py-16">
           <div className="container mx-auto px-6 max-w-4xl">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold capitalize">
-                {article.category}
+            {article.featured && (
+              <span className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold mb-4">
+                ⭐ Featured Article
               </span>
-              <span className="text-white/80">•</span>
-              <span className="text-white/80">{article.views} views</span>
-            </div>
+            )}
             
             <h1 className="text-4xl md:text-5xl font-black mb-6">
               {article.title}
@@ -189,204 +142,169 @@ export default function BlogArticlePage() {
             </p>
 
             <div className="flex items-center gap-4">
-              <Image
-                src={article.author.avatar}
-                alt={`${article.author.name} - ${article.author.title} profile photo`}
-                width={56}
-                height={56}
-                className="rounded-full border-4 border-white/20"
-              />
-              <div>
-                <div className="font-bold text-lg">{article.author.name}</div>
-                <div className="text-sm text-white/80">{article.author.title}</div>
-              </div>
+              <Link href={`/author/${article.authorId}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                  RKR
+                </div>
+                <div>
+                  <div className="font-bold text-lg">{article.author}</div>
+                  <div className="text-sm text-white/80">{formatDate(article.publishedAt)}</div>
+                </div>
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Article Content */}
-        <article className="container mx-auto px-6 max-w-4xl py-12">
-          <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12">
+        <article className="container mx-auto px-4 sm:px-6 max-w-4xl py-8 md:py-12">
+          <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-6 md:p-8 lg:p-12">
             
-            {/* PDF Download Card */}
-            <PDFDownloadCard post={{
-              id: article.id,
-              title: article.title,
-              content: article.content,
-              author: article.author.name,
-              publishedAt: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-              tags: article.tags,
-              category: article.category,
-              excerpt: article.excerpt,
-              imageUrl: article.imageUrl,
-              featured: article.featured
-            }} />
-
-            <div 
-              className="ecg-article-content
-                prose prose-lg max-w-none
-                prose-headings:font-black prose-headings:text-slate-900
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b-2 prose-h2:border-blue-200 prose-h2:pb-4
-                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-blue-900
-                prose-p:text-slate-700 prose-p:leading-relaxed prose-p:text-lg
-                prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-slate-900 prose-strong:font-bold
-                prose-ul:my-6 prose-li:my-2 prose-li:text-slate-700
-                prose-ol:my-6 prose-ol:text-slate-700
-                prose-img:rounded-2xl prose-img:shadow-2xl prose-img:my-8"
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
-
-            {/* Tags */}
-            <div className="mt-12 pt-8 border-t-2 border-slate-200">
-              <h3 className="font-black text-slate-900 mb-4 text-xl">📑 Article Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {article.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-sm font-semibold hover:from-blue-200 hover:to-purple-200 transition-all cursor-pointer"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Share */}
-            <div className="mt-8 p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200">
-              <h3 className="font-black text-slate-900 mb-4 text-lg">📤 Share this article</h3>
-              <div className="flex flex-wrap gap-4">
+            {/* PDF Download Section */}
+            <div className="mb-8 p-5 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-2 border-red-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">📄 Download for Offline Study</h3>
+                  <p className="text-sm text-gray-600">Save this article as PDF for reference and study</p>
+                </div>
                 <PDFDownloadButton 
                   post={{
-                    id: article.id,
+                    id: article.slug,
                     title: article.title,
                     content: article.content,
-                    author: article.author.name,
-                    publishedAt: article.publishedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                    author: article.author,
+                    publishedAt: article.publishedAt,
                     tags: article.tags,
-                    category: article.category,
+                    category: article.tags[0] || 'ECG',
                     excerpt: article.excerpt,
                     imageUrl: article.imageUrl,
                     featured: article.featured
                   }}
-                  variant="outline"
+                  variant="primary"
                   size="md"
-                  className="border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
                 />
-                <button 
-                  onClick={() => {
-                    const url = window.location.href;
-                    const text = article.title;
-                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-                  }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl">
-                  🐦 Share on Twitter
-                </button>
-                <button 
-                  onClick={() => {
-                    const url = window.location.href;
-                    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-                  }}
-                  className="px-6 py-3 bg-blue-800 text-white rounded-xl font-bold hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl"
-                >
-                  📘 Share on Facebook
-                </button>
-                <button 
-                  onClick={() => {
-                    const url = window.location.href;
-                    const text = article.title;
-                    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
-                  }}
-                  className="px-6 py-3 bg-blue-700 text-white rounded-xl font-bold hover:bg-blue-800 transition-all shadow-lg hover:shadow-xl"
-                >
-                  💼 Share on LinkedIn
-                </button>
               </div>
             </div>
 
-            {/* Author Info */}
-            <div className="mt-8 p-6 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl border-2 border-slate-200">
-              <div className="flex items-start gap-4">
-                <Image
-                  src={article.author.avatar}
-                  alt={`${article.author.name}, ${article.author.title} - medical expert and article author headshot`}
-                  width={80}
-                  height={80}
-                  className="rounded-full border-4 border-white shadow-lg"
-                />
-                <div>
-                  <h3 className="font-black text-slate-900 text-xl mb-1">{article.author.name}</h3>
-                  <p className="text-blue-600 font-semibold mb-3">{article.author.title}</p>
-                  <p className="text-slate-600 leading-relaxed">
-                    Board-certified Emergency Medicine physician with extensive experience in acute cardiac care and ECG interpretation. 
-                    Passionate about medical education and bringing evidence-based emergency medicine knowledge to healthcare providers worldwide.
-                  </p>
-                </div>
-              </div>
+            <div 
+              className="ecg-article-content
+                prose prose-base md:prose-lg lg:prose-xl max-w-none
+                
+                /* Headings */
+                prose-headings:font-black prose-headings:text-slate-900 prose-headings:break-words prose-headings:leading-tight
+                
+                /* H2 Styling */
+                prose-h2:text-2xl md:prose-h2:text-3xl lg:prose-h2:text-4xl 
+                prose-h2:mt-12 md:prose-h2:mt-16 
+                prose-h2:mb-6 md:prose-h2:mb-8 
+                prose-h2:pb-4 md:prose-h2:pb-5
+                prose-h2:border-b-4 prose-h2:border-blue-300
+                prose-h2:bg-gradient-to-r prose-h2:from-blue-50 prose-h2:to-transparent
+                prose-h2:px-4 prose-h2:py-3
+                prose-h2:rounded-lg
+                
+                /* H3 Styling */
+                prose-h3:text-xl md:prose-h3:text-2xl lg:prose-h3:text-3xl
+                prose-h3:mt-8 md:prose-h3:mt-10 
+                prose-h3:mb-4 md:prose-h3:mb-6
+                prose-h3:text-blue-900
+                prose-h3:border-l-4 prose-h3:border-blue-500
+                prose-h3:pl-4
+                
+                /* H4 Styling */
+                prose-h4:text-lg md:prose-h4:text-xl lg:prose-h4:text-2xl
+                prose-h4:mt-6 md:prose-h4:mt-8
+                prose-h4:mb-3 md:prose-h4:mb-4
+                prose-h4:text-slate-800
+                prose-h4:font-bold
+                
+                /* Paragraphs */
+                prose-p:text-slate-700 prose-p:leading-relaxed 
+                prose-p:text-base md:prose-p:text-lg lg:prose-p:text-xl
+                prose-p:mb-4 md:prose-p:mb-6
+                prose-p:break-words
+                
+                /* Links */
+                prose-a:text-blue-600 prose-a:font-semibold prose-a:no-underline hover:prose-a:underline prose-a:break-words
+                
+                /* Strong/Bold */
+                prose-strong:text-slate-900 prose-strong:font-bold
+                
+                /* Lists */
+                prose-ul:my-6 md:prose-ul:my-8 prose-ul:pl-6 md:prose-ul:pl-8 prose-ul:space-y-2
+                prose-ol:my-6 md:prose-ol:my-8 prose-ol:pl-6 md:prose-ol:pl-8 prose-ol:space-y-2
+                prose-li:text-slate-700 prose-li:leading-relaxed prose-li:text-base md:prose-li:text-lg prose-li:break-words
+                prose-li:my-2
+                [&_ul]:list-disc [&_ul]:marker:text-blue-600
+                [&_ol]:list-decimal [&_ol]:marker:text-blue-600 [&_ol]:marker:font-bold
+                [&_li_strong]:text-slate-900 [&_li_strong]:font-bold
+                
+                /* Images */
+                prose-img:rounded-xl md:prose-img:rounded-2xl 
+                prose-img:shadow-lg md:prose-img:shadow-2xl 
+                prose-img:my-8 md:prose-img:my-10 
+                prose-img:w-full
+                prose-img:border-2 prose-img:border-slate-200
+                
+                /* Code */
+                prose-code:bg-slate-100 prose-code:px-2 prose-code:py-1 prose-code:rounded 
+                prose-code:text-sm prose-code:break-words prose-code:text-red-600 prose-code:font-mono
+                prose-pre:bg-slate-900 prose-pre:text-slate-50 prose-pre:p-4 md:prose-pre:p-6
+                prose-pre:rounded-xl prose-pre:overflow-x-auto prose-pre:my-6
+                
+                /* Blockquotes */
+                prose-blockquote:border-l-4 prose-blockquote:border-blue-500 
+                prose-blockquote:pl-6 prose-blockquote:italic 
+                prose-blockquote:bg-blue-50 prose-blockquote:py-4 prose-blockquote:rounded-r-lg
+                prose-blockquote:my-6
+                
+                /* Tables */
+                prose-table:w-full prose-table:overflow-x-auto prose-table:block md:prose-table:table
+                prose-table:my-8 prose-table:border-2 prose-table:border-slate-200 prose-table:rounded-lg
+                
+                /* Horizontal Rules */
+                prose-hr:border-slate-300 prose-hr:my-12
+                
+                [&>*]:break-words
+                [&_*]:scroll-mt-24"
+              dangerouslySetInnerHTML={{ __html: article.htmlContent || '' }}
+            />
+
+            {/* Share & Download Section */}
+            <div className="mt-8 p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200">
+              <h3 className="font-black text-slate-900 mb-4 text-lg">📤 Share & Save This Article</h3>
+              <ShareButtons 
+                post={{
+                  id: article.slug,
+                  title: article.title,
+                  content: article.content,
+                  author: article.author,
+                  publishedAt: article.publishedAt,
+                  tags: article.tags,
+                  category: article.tags[0] || 'ECG',
+                  excerpt: article.excerpt,
+                  imageUrl: article.imageUrl,
+                  featured: article.featured
+                }}
+                articleUrl={`https://ecgkid.com/blog/${article.slug}`}
+              />
             </div>
+
           </div>
+
+          {/* Related Videos */}
+          {relatedVideos.length > 0 && (
+            <div className="mt-12">
+              <RelatedVideos videos={relatedVideos} />
+            </div>
+          )}
+
+          {/* Related Articles */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-8">
+              <RelatedArticles articles={relatedArticles} />
+            </div>
+          )}
         </article>
-
-        {/* Related Resources Section */}
-        <div className="container mx-auto px-6 max-w-6xl pb-8">
-          <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Continue Your Learning</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {/* More Tutorials */}
-            <Link
-              href="/tutorials"
-              className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200 hover:border-purple-400 hover:shadow-xl transition-all group"
-            >
-              <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition-colors">
-                More ECG Tutorials
-              </h3>
-              <p className="text-slate-600 mb-4">
-                Explore comprehensive guides on arrhythmias, conduction blocks, and MI patterns.
-              </p>
-              <span className="text-purple-600 font-semibold">Browse Tutorials →</span>
-            </Link>
-
-            {/* Practice with App */}
-            <Link
-              href="/#app-section"
-              className="bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-400 hover:shadow-xl transition-all group"
-            >
-              <div className="text-4xl mb-4">📱</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
-                Practice with Our App
-              </h3>
-              <p className="text-slate-600 mb-4">
-                Download the mobile app to test your ECG skills with real cases and instant feedback.
-              </p>
-              <span className="text-blue-600 font-semibold">Get the App →</span>
-            </Link>
-
-            {/* More Articles */}
-            <Link
-              href="/blog"
-              className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border-2 border-orange-200 hover:border-orange-400 hover:shadow-xl transition-all group"
-            >
-              <div className="text-4xl mb-4">✍️</div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors">
-                Read More Articles
-              </h3>
-              <p className="text-slate-600 mb-4">
-                Discover more case studies, expert tips, and clinical pearls from our blog.
-              </p>
-              <span className="text-orange-600 font-semibold">View All Posts →</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Back to Blog */}
-        <div className="container mx-auto px-6 max-w-4xl pb-16">
-          <Link
-            href="/blog"
-            className="block text-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
-          >
-            ← Back to All Blog Articles
-          </Link>
-        </div>
       </div>
     </>
   );

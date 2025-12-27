@@ -32,36 +32,6 @@ export interface BlogPost {
   commentCount: number;
 }
 
-export interface ForumTopic {
-  id: string;
-  title: string;
-  description: string;
-  category: 'general' | 'technical' | 'learning' | 'bugs' | 'feature-request' | 'app';
-  authorId: string;
-  authorName: string;
-  status: 'open' | 'answered' | 'closed';
-  priority: 'low' | 'medium' | 'high';
-  tags: string[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  views: number;
-  replyCount: number;
-  lastReplyAt?: Timestamp;
-  resolved: boolean;
-}
-
-export interface ForumReply {
-  id: string;
-  topicId: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  likes: number;
-  isAnswer: boolean;
-}
-
 export interface Comment {
   id: string;
   postId: string;
@@ -70,4 +40,27 @@ export interface Comment {
   authorName: string;
   createdAt: Timestamp;
   likes: number;
+}
+
+export interface Video {
+  id: string;
+  videoId: string; // YouTube video ID
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  duration: string; // ISO 8601 format (PT1M33S)
+  durationSeconds: number;
+  publishedAt: Timestamp;
+  updatedAt: Timestamp;
+  category: string;
+  tags: string[];
+  views: number;
+  likes: number;
+  channelTitle: string;
+  embedUrl: string;
+  youtubeUrl: string;
+  featured: boolean;
+  slug?: string;
+  transcript?: string;
+  relatedVideoIds?: string[];
 }

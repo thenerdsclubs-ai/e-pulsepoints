@@ -7,6 +7,7 @@ import Footer from "./components/layout/Footer";
 import GamificationHeader from "./components/ui/GamificationHeader";
 import LoadingScreen from "./components/ui/LoadingScreen";
 import { AdminProvider } from "@/contexts/AdminContext";
+import { generateWebSiteSchema } from "@/lib/schemas";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -75,9 +76,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const websiteSchema = generateWebSiteSchema();
+
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        {/* Website Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        
         {/* Favicons */}
         <link rel="icon" type="image/png" sizes="32x32" href="/logo/logo.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/logo/logo.png" />

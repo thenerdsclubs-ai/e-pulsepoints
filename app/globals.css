@@ -48,6 +48,44 @@ body {
   @apply antialiased;
 }
 
+/* Medical term links styling */
+.medical-term-link {
+  @apply inline-block relative;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+  transition: all 0.2s ease;
+}
+
+.medical-term-link:hover {
+  @apply text-blue-700;
+  border-bottom-style: solid;
+  background-color: rgba(59, 130, 246, 0.1);
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+
+/* Content area enhancements */
+.clinical-bottom-line,
+.key-points,
+.remember-section {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.clinical-bottom-line h3,
+.key-points h3,
+.remember-section h3 {
+  letter-spacing: -0.025em;
+}
+
+/* Blog content responsive styling */
+@media (max-width: 768px) {
+  .clinical-bottom-line,
+  .key-points,
+  .remember-section {
+    @apply p-4 mx-2;
+  }
+}
+
 /* Duolingo-style Design System */
 .btn-primary {
   @apply bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 

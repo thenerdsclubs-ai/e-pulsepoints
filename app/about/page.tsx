@@ -30,32 +30,12 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const teamMembers = [
     {
-      name: 'Dr. Michael Anderson',
-      role: 'Chief Medical Officer',
-      credentials: 'MD, FACC',
-      description: 'Board-certified cardiologist with 15+ years experience in medical education',
-      image: '/team/dr-anderson.jpg'
-    },
-    {
-      name: 'Dr. Sarah Williams',
-      role: 'Lead Educator',
-      credentials: 'MD, MEd',
-      description: 'Medical education specialist focusing on innovative learning methodologies',
-      image: '/team/dr-williams.jpg'
-    },
-    {
-      name: 'Dr. James Chen',
-      role: 'Cardiology Consultant',
-      credentials: 'MD, PhD',
-      description: 'Electrophysiology expert and academic researcher',
-      image: '/team/dr-chen.jpg'
-    },
-    {
-      name: 'Alex Thompson',
-      role: 'Technology Director',
-      credentials: 'MS Computer Science',
-      description: 'Former Google engineer specializing in educational technology',
-      image: '/team/alex-thompson.jpg'
+      name: 'Dr. Raj K Reddy',
+      role: 'Founder & Chief Medical Officer',
+      credentials: 'MD, Emergency Medicine',
+      description: 'Board-certified Emergency Medicine physician with extensive experience in acute cardiac care, ECG interpretation, and medical education. Passionate about bringing evidence-based emergency medicine knowledge to healthcare providers worldwide.',
+      image: '/team/dr-raj-k-reddy.jpg',
+      authorSlug: 'raj-k-reddy'
     }
   ];
 
@@ -238,19 +218,27 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-8 max-w-2xl mx-auto">
           {teamMembers.map((member) => (
             <Card key={member.name} variant="elevated" padding="lg" className="text-center">
-              <div className="relative w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden bg-gray-200">
+              <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-gray-200">
                 {/* Placeholder for team member photos */}
-                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-xl">
+                <div className="w-full h-full bg-gradient-to-br from-red-500 to-blue-600 flex items-center justify-center text-white font-bold text-3xl">
                   {member.name.split(' ').map(n => n[0]).join('')}
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-1">{member.name}</h3>
               <div className="text-red-600 font-semibold mb-1">{member.role}</div>
               <div className="text-sm text-blue-600 mb-4">{member.credentials}</div>
-              <p className="text-gray-700 text-sm leading-relaxed">{member.description}</p>
+              <p className="text-gray-700 leading-relaxed mb-6">{member.description}</p>
+              {member.authorSlug && (
+                <Link 
+                  href={`/author/${member.authorSlug}`}
+                  className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                >
+                  View Profile & Articles →
+                </Link>
+              )}
             </Card>
           ))}
         </div>

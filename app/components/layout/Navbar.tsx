@@ -11,9 +11,9 @@ const Navbar = () => {
     { href: '/', label: 'Home' },
     { href: '/learn-ecg', label: 'Learn ECG' },
     { href: '/tools', label: 'Tools' },
+    { href: '/videos', label: 'Videos' },
     { href: '/app', label: 'App' },
     { href: '/blog', label: 'Blog' },
-    { href: '/forum', label: 'Community' },
     { href: '/about', label: 'About' },
   ];
 
