@@ -384,9 +384,16 @@ export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'E-PulsePoints - ECG Kid',
-    description: 'Master ECG interpretation through interactive learning, practice tests, and expert-guided video tutorials.',
+    name: 'E-PulsePoints - Master ECG Interpretation | Medical Education Platform',
+    alternateName: 'ECG Kid',
+    description: 'Complete ECG learning ecosystem with 73+ expert articles, 404+ videos, medical calculators, and interactive education by Dr. Raj K. Reddy.',
     url: 'https://ecgkid.com',
+    sameAs: [
+      'https://www.youtube.com/@ecgkid',
+      'https://twitter.com/ecgkid',
+      'https://www.instagram.com/ecgkid',
+      'https://www.linkedin.com/company/e-pulsepoints'
+    ],
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -398,13 +405,27 @@ export function generateWebSiteSchema() {
     publisher: {
       '@type': 'Organization',
       name: 'E-PulsePoints',
+      alternateName: 'ECG Kid',
       url: 'https://ecgkid.com',
+      description: 'Professional medical education platform specializing in ECG interpretation and cardiac care education.',
       logo: {
         '@type': 'ImageObject',
         url: 'https://ecgkid.com/logo/logo.png',
         width: 512,
         height: 512,
+        caption: 'E-PulsePoints - ECG Learning Platform Logo'
       },
+      founder: {
+        '@type': 'Person',
+        name: 'Dr. Raj K. Reddy',
+        jobTitle: 'Emergency Medicine Physician & Medical Educator',
+        url: 'https://ecgkid.com/author/raj-k-reddy'
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer service',
+        url: 'https://ecgkid.com/contact'
+      }
     },
   };
 }

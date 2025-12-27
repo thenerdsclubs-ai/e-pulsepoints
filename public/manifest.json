@@ -1,13 +1,21 @@
 {
-  "name": "E-PulsePoints - Master ECG Interpretation",
+  "name": "E-PulsePoints - Master ECG Interpretation | Medical Education Platform",
   "short_name": "E-PulsePoints",
-  "description": "Learn ECG interpretation through interactive education and practice",
+  "description": "Complete ECG learning ecosystem with 73+ expert articles, 404+ videos, medical calculators, and interactive education by Dr. Raj K. Reddy",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#dc2626",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
   "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
     {
       "src": "/logo/logo.png",
       "sizes": "192x192",
@@ -19,6 +27,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "apple touch icon"
     }
   ],
   "categories": ["education", "medical", "health"],
