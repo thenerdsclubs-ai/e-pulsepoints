@@ -6,7 +6,6 @@ import Card from './components/ui/Card';
 import AppCTAButton from './components/ui/AppCTAButton';
 import MascotImage from './components/ui/MascotImage';
 import ImageCarousel from './components/ui/ImageCarousel';
-import { OptimizedImage } from './components/ui/OptimizedPageWrapper';
 import { Metadata } from 'next';
 
 // Lazy load heavy components
