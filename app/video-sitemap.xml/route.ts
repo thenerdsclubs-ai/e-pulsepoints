@@ -1,19 +1,18 @@
 import { getAllVideos } from '@/lib/videos';
 
 /**
- * Convert seconds to ISO 8601 duration format (PT#H#M#S)
+ * Get duration in seconds for Video Sitemap
+ * Google Video Sitemap requires integer seconds (0-28800)
+ * NOT ISO 8601 format
  */
-function secondsToISO8601Duration(seconds: number): string {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-
-  let duration = 'PT';
-  if (hours > 0) duration += `${hours}H`;
-  if (minutes > 0) duration += `${minutes}M`;
-  if (secs > 0 || duration === 'PT') duration += `${secs}S`;
-
-  return duration;
+function getDurationInSeconds(video: ReturnType<typeof getAllVideos>[0]): number {
+  // Prefer durationSeconds if available
+  if (video.durationSeconds && video.durationSeconds > 0) {
+    return Math.floor(Math.min(video.durationSeconds, 28800)); // Max 8 hours
+  }
+  
+  // Fallback to 3 minutes if not available
+  return 180;
 }
 
 /**
@@ -55,10 +54,8 @@ export async function GET() {
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${videos
   .map((video) => {
-    // Convert duration to ISO 8601 format
-    const duration = video.durationSeconds 
-      ? secondsToISO8601Duration(video.durationSeconds)
-      : secondsToISO8601Duration(180); // Default 3 minutes if not available
+    // Get duration in seconds (Google Video Sitemap requires integer seconds, NOT ISO 8601)
+    const durationSeconds = getDurationInSeconds(video);
 
     // Ensure dates are in ISO 8601 format
     const publicationDate = toISO8601Date(video.publishedAt);
@@ -82,7 +79,7 @@ ${videos
       <video:description>${description}</video:description>
       <video:content_loc>${contentUrl}</video:content_loc>
       <video:player_loc>${embedUrl}</video:player_loc>
-      <video:duration>${duration}</video:duration>
+      <video:duration>${durationSeconds}</video:duration>
       <video:publication_date>${publicationDate}</video:publication_date>
       <video:family_friendly>yes</video:family_friendly>
       <video:requires_subscription>no</video:requires_subscription>
