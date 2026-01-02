@@ -6,10 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "analyze": "ANALYZE=true npm run build",
+    "analyze:server": "BUNDLE_ANALYZE=server npm run build",
+    "analyze:browser": "BUNDLE_ANALYZE=browser npm run build",
+    "perf": "npm run build && npm run start",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
     "firebase": "^12.6.0",
+    "framer-motion": "^12.23.26",
     "gray-matter": "^4.0.3",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.4",
@@ -20,13 +26,16 @@
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.1",
+    "web-vitals": "^5.1.0",
     "yaml": "^2.8.2"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.1.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.27",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "critters": "^0.0.23",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "tailwindcss": "^4",

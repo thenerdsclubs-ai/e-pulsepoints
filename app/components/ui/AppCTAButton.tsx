@@ -13,7 +13,7 @@ const AppCTAButton = ({
   showBoth = false, 
   className = '' 
 }: AppCTAButtonProps) => {
-  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl';
+  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl whitespace-nowrap';
   
   const variantClasses = {
     primary: 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white shadow-xl',
@@ -22,10 +22,10 @@ const AppCTAButton = ({
   };
 
   const sizeClasses = {
-    sm: 'py-3 px-6 text-sm',
-    md: 'py-4 px-8 text-base',
-    lg: 'py-5 px-10 text-lg',
-    xl: 'py-6 px-12 text-xl',
+    sm: 'py-3 px-6 text-sm min-h-[40px]',
+    md: 'py-4 px-8 text-base min-h-[48px]',
+    lg: 'py-5 px-10 text-lg min-h-[56px]',
+    xl: 'py-6 px-12 text-xl min-h-[64px]',
   };
 
   const buttonClasses = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;

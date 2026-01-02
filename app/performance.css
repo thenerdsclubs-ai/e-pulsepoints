@@ -16,18 +16,7 @@
   }
 }
 
-/* Optimize font rendering */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Reduce layout shifts */
-img, video {
-  max-width: 100%;
-  height: auto;
-}
+/* Note: Font rendering and layout optimizations moved to globals.css to prevent conflicts */
 
 /* Optimize animations */
 @media (prefers-reduced-motion: reduce) {

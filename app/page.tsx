@@ -1,11 +1,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import Section from './components/ui/Section';
 import Card from './components/ui/Card';
 import AppCTAButton from './components/ui/AppCTAButton';
 import MascotImage from './components/ui/MascotImage';
 import ImageCarousel from './components/ui/ImageCarousel';
+import { OptimizedImage } from './components/ui/OptimizedPageWrapper';
 import { Metadata } from 'next';
+
+// Lazy load heavy components
+const LazyVideoPlayer = dynamic(() => import('./components/ui/VideoPlayer'), {
+  loading: () => <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg"></div>,
+});
+
+// Placeholder for missing components
+const LazyTestimonials = () => <div className="p-8 text-center">Testimonials coming soon...</div>;
+const LazyNewsletterSignup = () => <div className="p-8 text-center">Newsletter signup coming soon...</div>;
 
 export const metadata: Metadata = {
   title: 'E-PulsePoints - Master ECG Interpretation | Free ECG Learning Platform',
