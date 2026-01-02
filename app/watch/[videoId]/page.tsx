@@ -91,15 +91,46 @@ export default async function VideoPage({
   const youtubeId = video.videoId;
   const embedUrl = `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1`;
 
-  // Generate Video Schema
+  // Convert duration to ISO 8601 format (PT#H#M#S)
+  const secondsToISO8601Duration = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    let duration = 'PT';
+    if (hours > 0) duration += `${hours}H`;
+    if (minutes > 0) duration += `${minutes}M`;
+    if (secs > 0 || duration === 'PT') duration += `${secs}S`;
+
+    return duration;
+  };
+
+  // Ensure date is in ISO 8601 format
+  const toISO8601Date = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return new Date().toISOString();
+      }
+      return date.toISOString();
+    } catch {
+      return new Date().toISOString();
+    }
+  };
+
+  // Generate Video Schema with proper ISO 8601 formatting
   const videoSchema = generateEducationalVideoSchema({
     name: video.title,
     description: video.description,
     thumbnailUrl: video.thumbnailUrl,
-    uploadDate: new Date(video.publishedAt).toISOString(),
+    uploadDate: toISO8601Date(video.publishedAt),
     embedUrl: embedUrl,
     contentUrl: video.youtubeUrl,
-    duration: video.duration ? `PT${video.duration}` : undefined,
+    duration: video.durationSeconds 
+      ? secondsToISO8601Duration(video.durationSeconds)
+      : video.duration && !isNaN(parseInt(video.duration))
+        ? secondsToISO8601Duration(parseInt(video.duration))
+        : secondsToISO8601Duration(180), // Default 3 minutes if not available
     category: video.category,
     learningResourceType: 'Tutorial',
     educationalLevel: video.category.includes('Advanced') ? 'Advanced' : 

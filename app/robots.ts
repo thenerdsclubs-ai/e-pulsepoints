@@ -15,7 +15,15 @@ export default function robots(): MetadataRoute.Robots {
           '/clean-duplicates',
         ],
       },
+      {
+        userAgent: 'Googlebot',
+        allow: ['/watch/', '/blog/', '/videos', '/tools/', '/tutorials/'],
+        disallow: ['/api/', '/admin/'],
+      },
     ],
-    sitemap: 'https://ecgkid.com/sitemap.xml',
+    sitemap: [
+      'https://ecgkid.com/sitemap.xml',
+      'https://ecgkid.com/video-sitemap.xml',
+    ],
   };
 }
