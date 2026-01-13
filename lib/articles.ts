@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
 
 const articlesDirectory = path.join(process.cwd(), 'content/articles');
 
@@ -67,8 +68,9 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
       .replace(/\n{3,}/g, '\n\n')  // Replace multiple newlines with double
       .trim();
 
-    // Convert markdown to HTML
+    // Convert markdown to HTML with GitHub Flavored Markdown support
     const processedContent = await remark()
+      .use(remarkGfm) // Enable images, tables, strikethrough, etc.
       .use(html, { sanitize: false })
       .process(cleanedContent);
     const htmlContent = processedContent.toString();
