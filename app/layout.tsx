@@ -90,6 +90,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8771007845211506"
+          crossOrigin="anonymous"
+        />
+        
         {/* Website Schema */}
         <script
           type="application/ld+json"
