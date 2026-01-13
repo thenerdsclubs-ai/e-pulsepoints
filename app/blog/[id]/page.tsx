@@ -9,6 +9,7 @@ import PDFDownloadButton from '@/app/components/blog/PDFDownloadButton';
 import ShareButtons from '@/app/components/blog/ShareButtons';
 import TableOfContents from '@/app/components/blog/TableOfContents';
 import ReadingProgress from '@/app/components/blog/ReadingProgress';
+import AppCTA from '@/app/components/blog/AppCTA';
 import { RelatedVideos, RelatedArticles } from '@/app/components/content/RelatedContent';
 
 export async function generateStaticParams() {
@@ -373,6 +374,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
                       />
                     </div>
                   </div>
+
+                  {/* App Download CTA */}
+                  <AppCTA />
 
                 </div>
               </div>

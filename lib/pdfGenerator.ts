@@ -172,20 +172,56 @@ export class BlogPDFGenerator {
         margin: 15px 0;
         border-left: 4px solid #3b82f6;
       }
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 15px 0;
+      }
     `;
     
     document.head.appendChild(styleElement);
     document.body.appendChild(tempDiv);
     
     try {
-      // Convert HTML content to canvas with higher resolution
+      // Wait for all images to load before capturing
+      const images = tempDiv.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map(img => {
+        return new Promise<void>((resolve) => {
+          if (img.complete) {
+            resolve();
+          } else {
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // Resolve even on error to continue
+            // Set crossOrigin to allow CORS images
+            img.crossOrigin = 'anonymous';
+          }
+        });
+      });
+      
+      // Wait for all images to load (max 10 seconds timeout)
+      await Promise.race([
+        Promise.all(imagePromises),
+        new Promise(resolve => setTimeout(resolve, 10000))
+      ]);
+      
+      // Convert HTML content to canvas with higher resolution and better image handling
       const canvas = await html2canvas(tempDiv, {
-        scale: 1,
+        scale: 2, // Higher scale for better quality
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: tempDiv.scrollWidth,
-        height: tempDiv.scrollHeight
+        height: tempDiv.scrollHeight,
+        logging: false,
+        imageTimeout: 15000, // 15 second timeout for images
+        onclone: (clonedDoc) => {
+          // Ensure images in cloned document have proper attributes
+          const clonedImages = clonedDoc.getElementsByTagName('img');
+          Array.from(clonedImages).forEach(img => {
+            img.crossOrigin = 'anonymous';
+          });
+        }
       });
       
       const imgData = canvas.toDataURL('image/png');
